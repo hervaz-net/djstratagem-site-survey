@@ -1,57 +1,7 @@
-// Product previews — small, honest mockups of the desk in motion.
+// Embedded motion screens — small, honest views of the desk doing its job.
 @use 'tools' as t;
 
-// Home teaser band. CSS-only loops so they work before any JS runs.
-.prev-band { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--ds-space-4); margin-top: var(--ds-space-6); }
-.prev {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: var(--ds-space-4);
-  padding: var(--ds-space-5);
-  min-height: 210px;
-  @include t.card-surface;
-  transition: transform 320ms var(--ds-ease-out), border-color 320ms;
-}
-.prev:hover { transform: translateY(-6px); border-color: var(--ds-accent); }
-.prev__top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.prev__top b { font-family: var(--ds-font-display); font-size: var(--ds-text-lg); letter-spacing: -.02em; }
-.prev__art { margin-top: auto; display: grid; gap: 8px; }
-.prev__line { display: flex; align-items: center; justify-content: space-between; font-size: var(--ds-text-xs); color: var(--ds-text-muted); }
-.prev__meter { height: 6px; border-radius: 3px; background: var(--ds-surface-2); overflow: hidden; }
-.prev__meter i {
-  display: block;
-  height: 100%;
-  width: var(--w, 60%);
-  border-radius: inherit;
-  background: linear-gradient(90deg, var(--ds-accent-2), var(--ds-accent));
-  transform-origin: left;
-  animation: grow 1.2s var(--ds-ease-out) infinite alternate;
-}
-.prev__meter:nth-child(2) i { animation-delay: 180ms; }
-.prev__meter:nth-child(3) i { animation-delay: 360ms; }
-.prev__dots { display: flex; gap: 8px; }
-.prev__dots i {
-  width: 10px; height: 10px; border-radius: 50%;
-  background: var(--ds-border);
-  animation: pulseLine 1.8s ease-in-out infinite;
-}
-.prev__dots i:nth-child(2) { animation-delay: 300ms; }
-.prev__dots i:nth-child(3) { animation-delay: 600ms; }
-.prev__bars { display: flex; align-items: flex-end; gap: 7px; height: 62px; }
-.prev__bars i {
-  flex: 1; height: var(--h);
-  border-radius: 3px 3px 0 0;
-  background: linear-gradient(180deg, var(--ds-accent), color-mix(in srgb, var(--ds-accent) 25%, transparent));
-  animation: grow 1.3s var(--ds-ease-out) infinite alternate;
-}
-.prev__bars i:nth-child(2) { animation-delay: 120ms; }
-.prev__bars i:nth-child(3) { animation-delay: 240ms; }
-.prev__bars i:nth-child(4) { animation-delay: 360ms; }
-.prev__bars i:nth-child(5) { animation-delay: 480ms; }
-.prev__foot { font-size: var(--ds-text-xs); color: var(--ds-text-subtle); }
-
-// Preview page layout
+// Inline demo layout
 .demo-two { align-items: start; }
 .demo-copy { position: sticky; top: 96px; }
 .demo-copy .lede { margin-bottom: var(--ds-space-5); }
@@ -254,7 +204,6 @@
 .dispatch-caption { margin-top: 10px; font-size: var(--ds-text-xs); color: var(--ds-text-muted); display: flex; justify-content: space-between; gap: 12px; }
 
 @include t.below(md) {
-  .prev-band { grid-template-columns: 1fr; }
   .demo-copy { position: static; }
   .kanban { grid-template-columns: repeat(2, 1fr); }
   .cash-chart { height: 160px; }

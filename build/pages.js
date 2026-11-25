@@ -5,23 +5,120 @@ const path = require('path');
 const root = path.join(__dirname, '..');
 
 const MODES = [
-  ['Projects', 'find', 'Bid invitations and public work filtered to the trades you actually self-perform and the counties you actually drive to.', ['Trade fit against licence and crew', 'Drive time from your yard', 'Owner and GC history attached'], '92% fit on the Pasadena TI'],
-  ['Exchange', 'find', 'Post what you need, see who actually stocks it, and keep buyer and supplier reading the same request.', ['One readable request', 'Stock confirmed before you call', 'Buyer and supplier in sync'], '3 suppliers matched in 40 min'],
-  ['Platform', 'win', 'The pursuit workspace behind every job: scope, takeoff notes, quotes, the next action and who owes it.', ['Scope and quotes on the job', 'Every revision kept', 'Next action always named'], '6 active pursuits · 0 lost notes'],
-  ['Solutions', 'win', 'A connected setup for each side of the job — GC, sub, supplier — without three separate logins.', ['One identity per company', 'Permissions by role', 'No re-keying across sides'], 'GC · sub · supplier, one desk'],
-  ['Supply', 'build', 'Source material against the real schedule, with lead times attached to the job that needs them.', ['Lead times on the schedule', 'Quotes compared side by side', 'Substitution flagged early'], ' conduit order · 11-day lead'],
-  ['Capital', 'build', 'See the cash gap between draw and payroll before it happens, not during it.', ['Draw vs payroll by week', 'Gap surfaced a month out', 'Numbers stay with the job'], '$48k gap, seen 4 weeks early'],
-  ['Workforce', 'build', 'Match certified crews to the work ahead and keep the roster honest week to week.', ['Certifications checked', 'Crew booked to dates', 'Roster stays current'], '2 crews certified and available'],
-  ['Fleet', 'build', 'Get trucks, lifts and equipment to the gate on the morning the work starts.', ['Equipment tied to the job', 'Gate time, not a guess', 'Conflicts visible early'], 'Boom lift booked for 7am'],
-  ['Studio', 'keep', 'Turn a finished job into the thing that wins the next one: photos, scope, numbers, a reference that holds up.', ['Project page for an owner', 'Performance carried forward', 'Repeat customers surfaced'], 'Pasadena TI · complete'],
+  ['Projects', 'find', 'Bid invitations and public work filtered to the trades you actually self-perform and the counties you actually drive to.', ['Trade fit against licence and crew', 'Drive time from your yard', 'Owner and GC history attached'], '92% fit on the Pasadena TI', 'Bid invitations'],
+  ['Exchange', 'find', 'Post what you need, see who actually stocks it, and keep buyer and supplier reading the same request.', ['One readable request', 'Stock confirmed before you call', 'Buyer and supplier in sync'], '3 suppliers matched in 40 min', 'Stock + replies'],
+  ['Platform', 'win', 'The pursuit workspace behind every job: scope, takeoff notes, quotes, the next action and who owes it.', ['Scope and quotes on the job', 'Every revision kept', 'Next action always named'], '6 active pursuits · 0 lost notes', 'Scope + quotes'],
+  ['Solutions', 'win', 'A connected setup for each side of the job — GC, sub, supplier — without three separate logins.', ['One identity per company', 'Permissions by role', 'No re-keying across sides'], 'GC · sub · supplier, one desk', 'One identity'],
+  ['Supply', 'build', 'Source material against the real schedule, with lead times attached to the job that needs them.', ['Lead times on the schedule', 'Quotes compared side by side', 'Substitution flagged early'], 'Conduit order · 11-day lead', 'Lead times'],
+  ['Capital', 'build', 'See the cash gap between draw and payroll before it happens, not during it.', ['Draw vs payroll by week', 'Gap surfaced a month out', 'Numbers stay with the job'], '$48k gap, seen 4 weeks early', 'Draw vs payroll'],
+  ['Workforce', 'build', 'Match certified crews to the work ahead and keep the roster honest week to week.', ['Certifications checked', 'Crew booked to dates', 'Roster stays current'], '2 crews certified and available', 'Certified crews'],
+  ['Fleet', 'build', 'Get trucks, lifts and equipment to the gate on the morning the work starts.', ['Equipment tied to the job', 'Gate time, not a guess', 'Conflicts visible early'], 'Boom lift booked for 7am', 'Equipment at gate'],
+  ['Studio', 'keep', 'Turn a finished job into the thing that wins the next one: photos, scope, numbers, a reference that holds up.', ['Project page for an owner', 'Performance carried forward', 'Repeat customers surfaced'], 'Pasadena TI · complete', 'Proof for next job'],
 ];
 
 const PAGES = {
-  'index.html': 'Home', 'modes.html': 'Nine modes', 'demos.html': 'Product previews',
+  'index.html': 'Home', 'modes.html': 'Nine modes',
   'how-it-works.html': 'How it works', 'approvals.html': 'Approvals',
   'estimator.html': 'Estimator', 'coverage.html': 'Coverage',
   'pricing.html': 'Pricing', 'join.html': 'Join',
 };
+
+/* ---------------- SHARED MOTION SCREENS ---------------- */
+// Each page embeds only the screen that belongs to its story. The behaviour
+// lives in app.js and is keyed by data-demo-sec / data-screen.
+
+function inlineDemo(id, stage, title, copy, screen, actionLabel, href) {
+  return `<section class="sec demo-sec" id="${id}" data-demo-sec="${id}" data-obs>
+  <div class="wrap two demo-two">
+    <div class="demo-copy">
+      <span class="eyebrow">${stage}</span>
+      <h2 class="h2">${title}</h2>
+      <p class="lede">${copy}</p>
+      <div class="demo-actions">
+        <button class="btn btn--accent" data-demo="${id}">${actionLabel}</button>
+        <button class="btn btn--ghost" data-reset="${id}">Restart</button>
+        <a class="btn btn--line" href="${href}">See the mode <span class="arrow">→</span></a>
+      </div>
+      <p class="demo-note">Illustrative screen. The numbers show the motion, not a quote for a live job.</p>
+    </div>
+    ${screen}
+  </div>
+</section>`;
+}
+
+const bar = (label, pill = 'In motion') => `<div class="dscreen__bar"><span class="dscreen__dots"><i></i><i></i><i></i></span><span class="mono">${label}</span><span class="pill pill--live" data-screen-pill><i></i>${pill}</span></div>`;
+
+const fitScreen = `<div class="dscreen" data-screen="fit" aria-label="Projects fit scoring screen">
+  ${bar('DJS / Projects · opportunities', 'Live scoring')}
+  <div class="dscreen__body">
+    <div class="fit-head" data-fit-body>
+      <div><span class="mono tiny" data-fit-id>DJS-014</span><h3 data-fit-title>Commercial TI · Pasadena</h3><p class="tiny muted" data-fit-meta>Electrical · 12 min from your yard</p></div>
+      <div class="fit-score" data-fit-score style="--score:0"><b data-fit-num>0</b><span>fit</span></div>
+    </div>
+    <div class="fit-meters">
+      <div class="fit-meter"><span>Trade and licence fit</span><i><b data-fit-bar="0"></b></i></div>
+      <div class="fit-meter"><span>Crew available</span><i><b data-fit-bar="1"></b></i></div>
+      <div class="fit-meter"><span>Drive from your yard</span><i><b data-fit-bar="2"></b></i></div>
+    </div>
+    <div class="fit-trail"><span data-fit-line>Ready for your estimator</span><span class="mono" data-fit-step>01 / 03</span></div>
+  </div>
+</div>`;
+
+const sendScreen = `<div class="dscreen" data-screen="send" aria-label="Exchange supplier request screen">
+  ${bar('DJS / Exchange · request 0142', 'Draft ready')}
+  <div class="dscreen__body">
+    <div class="req"><span>Supply request</span><b>3/4&quot; conduit · 1,200 ft</b><p class="tiny muted">Delivery Thu 07:00 · Pasadena · scope attached</p></div>
+    <div class="send-rows" data-send-rows>
+      <div class="send-row"><span class="send-row__ic">AW</span><span><b>Harbor Wholesale</b><small>In stock · quote on file</small></span><span class="send-row__state">Waiting</span><span class="send-row__price" data-send-price="$176,840">—</span></div>
+      <div class="send-row"><span class="send-row__ic">AE</span><span><b>Alpine Electric Supply</b><small>Stock confirmed this morning</small></span><span class="send-row__state">Waiting</span><span class="send-row__price" data-send-price="$184,200">—</span></div>
+      <div class="send-row"><span class="send-row__ic">IC</span><span><b>Inland Conduit Co.</b><small>Lead time 11 days</small></span><span class="send-row__state">Waiting</span><span class="send-row__price" data-send-price="$191,500">—</span></div>
+    </div>
+    <div class="send-foot"><span data-send-line>Request drafted. Nothing sent until you approve.</span><span class="mono" data-send-count>0 / 3 quotes</span></div>
+  </div>
+</div>`;
+
+const routeScreen = `<div class="dscreen" data-screen="route" aria-label="Platform pursuit board screen">
+  ${bar('DJS / Platform · DJS-014', 'Human gate')}
+  <div class="dscreen__body">
+    <div class="kanban" data-kanban>
+      <div class="kcol is-on"><span>Lead</span><div class="kcol__slot"><div class="kcard is-moving" data-route-card><em>DJS-014</em><b>Pasadena TI</b><small>Matched to your trade · 92% fit</small></div></div></div>
+      <div class="kcol"><span>Priced</span><div class="kcol__slot"></div></div>
+      <div class="kcol"><span>Pursuit</span><div class="kcol__slot"></div></div>
+      <div class="kcol"><span>Build</span><div class="kcol__slot"></div></div>
+    </div>
+    <div class="route-log" data-route-log><span><span class="mono">09:41</span> Subagent prepared the brief. Awaiting your OK.</span></div>
+  </div>
+</div>`;
+
+const cashScreen = `<div class="dscreen" data-screen="cash" aria-label="Capital cash gap screen">
+  ${bar('DJS / Capital · draw vs payroll', 'Four weeks out')}
+  <div class="dscreen__body">
+    <div class="cash-top"><div><span class="mono tiny">DJS-014 · Pasadena TI</span><h3>Cash position, by week</h3></div><span class="cash-gap" data-cash-gap>$0 gap</span></div>
+    <div class="cash-chart" data-cash-chart>
+      <div class="cash-week is-on" data-cash-week="0"><span>W2</span><i class="cash-draw" style="--h:0%" data-h="72"></i><i class="cash-pay" style="--h:0%" data-h="38"></i></div>
+      <div class="cash-week" data-cash-week="1"><span>W3</span><i class="cash-draw" style="--h:0%" data-h="80"></i><i class="cash-pay" style="--h:0%" data-h="52"></i></div>
+      <div class="cash-week" data-cash-week="2"><span>W4</span><i class="cash-draw" style="--h:0%" data-h="86"></i><i class="cash-pay" style="--h:0%" data-h="67"></i></div>
+      <div class="cash-week" data-cash-week="3"><span>W6</span><i class="cash-draw" style="--h:0%" data-h="92"></i><i class="cash-pay" style="--h:0%" data-h="100"></i></div>
+    </div>
+    <div class="cash-legend"><span><i></i>Draw</span><span><i></i>Payroll</span></div>
+    <div class="cash-tabs"><button data-cash-tab="0" class="is-on">Week 2</button><button data-cash-tab="1">Week 3</button><button data-cash-tab="2">Week 4</button><button data-cash-tab="3">Week 6</button></div>
+    <p class="cash-note" data-cash-note>Select a week to see the projected gap.</p>
+  </div>
+</div>`;
+
+const dispatchScreen = `<div class="dscreen" data-screen="dispatch" aria-label="Fleet and Workforce dispatch screen">
+  ${bar('DJS / Fleet + Workforce · Monday', '2 unassigned')}
+  <div class="dscreen__body">
+    <div class="dispatch-head"><span>Pasadena TI · 07:00 gate</span><span class="pill pill--warn" data-dispatch-state>2 unassigned</span></div>
+    <div class="dispatch-rows" data-dispatch-rows>
+      <div class="drow"><span class="drow__time">07:00</span><span class="drow__what"><b>Boom lift</b><small>Fleet · gate 3</small></span><span class="drow__assign" data-dispatch-assign>Book equipment</span></div>
+      <div class="drow"><span class="drow__time">07:00</span><span class="drow__what"><b>2 electricians</b><small>Workforce · certified</small></span><span class="drow__assign" data-dispatch-assign>Check crew</span></div>
+      <div class="drow"><span class="drow__time">06:45</span><span class="drow__what"><b>Conduit delivery</b><small>Exchange · 11-day lead</small></span><span class="drow__assign" data-dispatch-assign>Confirm slot</span></div>
+    </div>
+    <div class="dispatch-track"><i data-dispatch-progress></i></div>
+    <div class="dispatch-caption"><span data-dispatch-line>Three things to stage before the gate.</span><span class="mono" data-dispatch-count>0 / 3 ready</span></div>
+  </div>
+</div>`;
 
 const svgLogo = `<svg viewBox="0 0 32 32" width="32" height="32" aria-hidden="true"><path d="M3 27 L13 5 L19 18 L23 11 L29 27 Z" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round"/><circle cx="13" cy="5" r="2.4" fill="currentColor"/></svg>`;
 const chev = `<svg class="chev" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M2 4.5 L6 8.5 L10 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`;
@@ -37,7 +134,7 @@ function shell(file, title, desc, content) {
   const megaCols = ['find', 'win', 'build', 'keep'].map(stage => {
     const head = stage[0].toUpperCase() + stage.slice(1);
     const links = MODES.filter(m => m[1] === stage).map(m =>
-      `<a class="mega__link" href="modes.html#${m[0].toLowerCase()}"><span class="mega__ic" data-ic="${m[0].toLowerCase()}"></span><span><strong>${m[0]}</strong><small>${m[2].split('.')[0]}.</small></span></a>`).join('');
+      `<a class="mega__link" href="modes.html#${m[0].toLowerCase()}"><span class="mega__ic" data-ic="${m[0].toLowerCase()}"></span><span><strong>${m[0]}</strong><small>${m[5]}</small></span></a>`).join('');
     return `<div class="mega__col"><p class="mega__head">${head}</p>${links}</div>`;
   }).join('');
 
@@ -85,18 +182,17 @@ function shell(file, title, desc, content) {
         <div class="mega" data-mega hidden>
           <div class="mega__grid">${megaCols}
             <div class="mega__col"><p class="mega__head">Go deeper</p>
-              <a class="mega__link" href="demos.html"><span class="mega__ic"></span><span><strong>Product previews</strong><small>Five screens, in motion.</small></span></a>
-              <a class="mega__link" href="how-it-works.html"><span class="mega__ic"></span><span><strong>How a job moves</strong><small>Four stages, one job.</small></span></a>
-              <a class="mega__link" href="approvals.html"><span class="mega__ic"></span><span><strong>Approvals</strong><small>Automation with a human gate.</small></span></a>
-              <a class="mega__link" href="estimator.html"><span class="mega__ic"></span><span><strong>Bid estimator</strong><small>Model your week.</small></span></a>
-              <div class="mega__promo"><span class="pill pill--live"><i></i>Live</span>
-                <p>Pasadena TI brief ready for review — 3 suppliers matched.</p>
-                <a class="link" href="join.html">Open the desk</a></div>
+              <a class="mega__link" href="index.html#fit"><span class="mega__ic"></span><span><strong>Fit scoring</strong><small>A lead gets ranked</small></span></a>
+              <a class="mega__link" href="how-it-works.html"><span class="mega__ic"></span><span><strong>How a job moves</strong><small>Four stages, one job</small></span></a>
+              <a class="mega__link" href="approvals.html"><span class="mega__ic"></span><span><strong>Approvals</strong><small>A human gate</small></span></a>
+              <a class="mega__link" href="estimator.html"><span class="mega__ic"></span><span><strong>Bid estimator</strong><small>Model your week</small></span></a>
             </div>
           </div>
+          <div class="mega__promo"><span class="pill pill--live"><i></i>Live</span>
+            <p>Pasadena TI brief ready for review — 3 suppliers matched.</p>
+            <a class="link" href="join.html">Open the desk</a></div>
         </div>
       </div>
-      ${navLink('demos.html', 'Previews', current)}
       ${navLink('how-it-works.html', 'How it works', current)}
       ${navLink('estimator.html', 'Estimator', current)}
       ${navLink('coverage.html', 'Coverage', current)}
@@ -134,7 +230,7 @@ ${content}
   <nav class="foot__cols" aria-label="Footer">
     <div><h4>Platform</h4><a href="modes.html#projects">Projects</a><a href="modes.html#exchange">Exchange</a><a href="modes.html#platform">Platform</a><a href="modes.html#solutions">Solutions</a><a href="modes.html#supply">Supply</a></div>
     <div><h4>Build</h4><a href="modes.html#capital">Capital</a><a href="modes.html#workforce">Workforce</a><a href="modes.html#fleet">Fleet</a><a href="modes.html#studio">Studio</a><a href="approvals.html">Approvals</a></div>
-    <div><h4>Company</h4><a href="demos.html">Previews</a><a href="coverage.html">Coverage</a><a href="pricing.html">Pricing</a><a href="join.html">Contact</a><a href="pricing.html#faq">Questions</a></div>
+    <div><h4>Company</h4><a href="index.html#fit">Fit scoring</a><a href="coverage.html">Coverage</a><a href="pricing.html">Pricing</a><a href="join.html">Contact</a><a href="pricing.html#faq">Questions</a></div>
     <div class="foot__news"><h4>Field notes</h4>
       <p class="tiny muted">What's bidding in SoCal, once a month.</p>
       <form class="news" data-news novalidate><input type="email" placeholder="you@company.com" aria-label="Email for field notes" required><button class="btn btn--accent" type="submit">Subscribe</button></form>
@@ -208,14 +304,7 @@ const home = `
   </div>
 </div></section>
 
-<section class="sec sec--alt"><div class="wrap" data-obs>
-  <div class="sec__head"><div><span class="eyebrow">See it move</span><h2 class="h2">Product previews, not brochure shots</h2><p class="lede">Watch the desk score a bid, gather quotes, move a pursuit, surface a cash gap and dispatch a morning. Each one is interactive.</p></div><a class="btn btn--line" href="demos.html">Open all previews <span class="arrow">→</span></a></div>
-  <div class="prev-band">
-    <a class="prev" href="demos.html#fit"><div class="prev__top"><b>Fit scoring</b><span class="tag tag--fit">Projects</span></div><div class="prev__art"><div class="prev__line"><span>Trade licence</span><span class="mono">92%</span></div><div class="prev__meter"><i style="--w:95%"></i></div><div class="prev__meter"><i style="--w:78%"></i></div><div class="prev__meter"><i style="--w:61%"></i></div></div><span class="prev__foot">Opportunity ranked before you open it →</span></a>
-    <a class="prev" href="demos.html#send"><div class="prev__top"><b>Supplier replies</b><span class="tag tag--cyan">Exchange</span></div><div class="prev__art"><div class="prev__dots"><i></i><i></i><i></i></div><div class="prev__line"><span>Quotes in</span><span class="mono">0 → 3</span></div><div class="prev__meter"><i style="--w:84%"></i></div></div><span class="prev__foot">One request, three readable replies →</span></a>
-    <a class="prev" href="demos.html#cash"><div class="prev__top"><b>Cash gap</b><span class="tag">Capital</span></div><div class="prev__art"><div class="prev__bars"><i style="--h:38%"></i><i style="--h:54%"></i><i style="--h:70%"></i><i style="--h:88%"></i><i style="--h:100%"></i></div><div class="prev__line"><span>Gap, four weeks out</span><span class="mono">$48k</span></div></div><span class="prev__foot">See it before payroll lands →</span></a>
-  </div>
-</div></section>
+${inlineDemo('fit', '01 / Projects', 'The lead arrives already ranked', 'Opportunities are scored against your licence, your crew and the drive from your yard. Cycle through three bids to see the fit change — and why the third one is worth a second look.', fitScreen, 'Next opportunity', 'modes.html#projects')}
 
 <section class="sec sec--alt"><div class="wrap">
   <div class="sec__head" data-obs><div><span class="eyebrow">02 / The path</span><h2 class="h2">A job, in motion</h2><p class="lede">Follow one Pasadena tenant improvement across the desk. Click a stage to see what changes.</p></div><a class="btn btn--line" href="how-it-works.html">Full walkthrough <span class="arrow">→</span></a></div>
@@ -306,6 +395,8 @@ const modes = `
   <div class="rail__detail" data-stage-detail><h4>Find — the work arrives already sorted</h4><p>Projects and Exchange surface opportunities by trade and territory. Fit is scored against your licence, your crew and the drive from your yard.</p></div>
 </div></section>
 
+${inlineDemo('send', 'Exchange / Find', 'One request, three readable replies', 'A subagent drafts the supplier request from the scope. You approve it, then the quotes come back into the same thread. No phone tag, no re-keying.', sendScreen, 'Send the request', 'modes.html#exchange')}
+
 ${ctaStrip()}
 
 <div class="sheet-back" data-sheet-back hidden></div>
@@ -343,6 +434,8 @@ const how = `
     </ol><footer class="jobcard__foot"><div class="faces"><span class="face">GC</span><span class="face">EL</span><span class="face">SP</span><span class="face face--more">+4</span></div><p class="tiny muted">One job. The right people in the loop.</p></footer>
   </aside>
 </div></section>
+
+${inlineDemo('route', 'Platform / Win', 'The pursuit moves, the notes stay', 'Scope, quotes and the next action travel with the job. Advance the card and watch the record keep its history at every stage.', routeScreen, 'Advance the job', 'modes.html#platform')}
 
 ${ctaStrip()}`;
 
@@ -385,6 +478,8 @@ const approvals = `
   <ul class="ticks ticks--lg"><li>You choose what work to hand off</li><li>Every run needs an explicit approval</li><li>Nothing sends, buys or commits on its own</li><li>The full log stays with the job</li><li>Any run can be sent back for changes</li></ul>
 </div></section>
 
+${inlineDemo('dispatch', 'Fleet + Workforce / Build', 'Stage the morning in one pass', 'Crew certifications, equipment and material delivery all read from the job. Book the morning and watch the gate time fill in.', dispatchScreen, 'Dispatch the morning', 'modes.html#fleet')}
+
 ${ctaStrip()}`;
 
 /* ---------------- ESTIMATOR ---------------- */
@@ -424,6 +519,8 @@ const estimator = `
     <details class="acc__item"><summary>Why pipeline value is not revenue<span class="acc__ic"></span></summary><div class="acc__body"><p>Pipeline value is bids × average job value. It shows how much work is in play, not what you will win. Hit rate and margin are separate questions.</p></div></details>
   </div>
 </div></section>
+
+${inlineDemo('cash', 'Capital / Build', 'See the gap before payroll lands', 'Draw and payroll sit on the same chart by week. Pick a week to watch the projection move from a quiet number to one you can act on.', cashScreen, 'Step through the weeks', 'modes.html#capital')}
 
 ${ctaStrip()}`;
 
@@ -535,132 +632,12 @@ const join = `
   </div>
 </div></section>`;
 
-/* ---------------- PRODUCT PREVIEWS ---------------- */
-
-function demoSection(id, n, mode, title, copy, screen, actionLabel, modeHref) {
-  return `<section class="sec demo-sec" id="${id}" data-demo-sec="${id}" data-obs>
-  <div class="wrap two demo-two">
-    <div class="demo-copy">
-      <span class="eyebrow">Preview ${String(n).padStart(2, '0')} / ${mode}</span>
-      <h2 class="h2">${title}</h2>
-      <p class="lede">${copy}</p>
-      <div class="demo-actions">
-        <button class="btn btn--accent" data-demo="${id}">${actionLabel}</button>
-        <button class="btn btn--ghost" data-reset="${id}">Restart</button>
-        <a class="btn btn--line" href="${modeHref}">Read the mode</a>
-      </div>
-      <p class="demo-note">Illustrative interface preview. The numbers are here to show the motion, not to quote a job.</p>
-    </div>
-    ${screen}
-  </div>
-</section>`;
-}
-
-const bar = (label, pill = 'In motion') => `<div class="dscreen__bar"><span class="dscreen__dots"><i></i><i></i><i></i></span><span class="mono">${label}</span><span class="pill pill--live" data-screen-pill><i></i>${pill}</span></div>`;
-
-const fitScreen = `<div class="dscreen" data-screen="fit" aria-label="Projects fit scoring preview">
-  ${bar('DJS / Projects · opportunities', 'Live scoring')}
-  <div class="dscreen__body">
-    <div class="fit-head" data-fit-body>
-      <div><span class="mono tiny" data-fit-id>DJS-014</span><h3 data-fit-title>Commercial TI · Pasadena</h3><p class="tiny muted" data-fit-meta>Electrical · 12 min from your yard</p></div>
-      <div class="fit-score" data-fit-score style="--score:0"><b data-fit-num>0</b><span>fit</span></div>
-    </div>
-    <div class="fit-meters">
-      <div class="fit-meter"><span>Trade and licence fit</span><i><b data-fit-bar="0"></b></i></div>
-      <div class="fit-meter"><span>Crew available</span><i><b data-fit-bar="1"></b></i></div>
-      <div class="fit-meter"><span>Drive from your yard</span><i><b data-fit-bar="2"></b></i></div>
-    </div>
-    <div class="fit-trail"><span data-fit-line>Ready for your estimator</span><span class="mono" data-fit-step>01 / 03</span></div>
-  </div>
-</div>`;
-
-const sendScreen = `<div class="dscreen" data-screen="send" aria-label="Exchange supplier request preview">
-  ${bar('DJS / Exchange · request 0142', 'Draft ready')}
-  <div class="dscreen__body">
-    <div class="req"><span>Supply request</span><b>3/4&quot; conduit · 1,200 ft</b><p class="tiny muted">Delivery Thu 07:00 · Pasadena · scope attached</p></div>
-    <div class="send-rows" data-send-rows>
-      <div class="send-row"><span class="send-row__ic">AW</span><span><b>Harbor Wholesale</b><small>In stock · quote on file</small></span><span class="send-row__state">Waiting</span><span class="send-row__price" data-send-price="$176,840">—</span></div>
-      <div class="send-row"><span class="send-row__ic">AE</span><span><b>Alpine Electric Supply</b><small>Stock confirmed this morning</small></span><span class="send-row__state">Waiting</span><span class="send-row__price" data-send-price="$184,200">—</span></div>
-      <div class="send-row"><span class="send-row__ic">IC</span><span><b>Inland Conduit Co.</b><small>Lead time 11 days</small></span><span class="send-row__state">Waiting</span><span class="send-row__price" data-send-price="$191,500">—</span></div>
-    </div>
-    <div class="send-foot"><span data-send-line>Request drafted. Nothing sent until you approve.</span><span class="mono" data-send-count>0 / 3 quotes</span></div>
-  </div>
-</div>`;
-
-const routeScreen = `<div class="dscreen" data-screen="route" aria-label="Platform pursuit board preview">
-  ${bar('DJS / Platform · DJS-014', 'Human gate')}
-  <div class="dscreen__body">
-    <div class="kanban" data-kanban>
-      <div class="kcol is-on"><span>Lead</span><div class="kcol__slot"><div class="kcard is-moving" data-route-card><em>DJS-014</em><b>Pasadena TI</b><small>Matched to your trade · 92% fit</small></div></div></div>
-      <div class="kcol"><span>Priced</span><div class="kcol__slot"></div></div>
-      <div class="kcol"><span>Pursuit</span><div class="kcol__slot"></div></div>
-      <div class="kcol"><span>Build</span><div class="kcol__slot"></div></div>
-    </div>
-    <div class="route-log" data-route-log><span><span class="mono">09:41</span> Subagent prepared the brief. Awaiting your OK.</span></div>
-  </div>
-</div>`;
-
-const cashScreen = `<div class="dscreen" data-screen="cash" aria-label="Capital cash gap preview">
-  ${bar('DJS / Capital · draw vs payroll', 'Four weeks out')}
-  <div class="dscreen__body">
-    <div class="cash-top"><div><span class="mono tiny">DJS-014 · Pasadena TI</span><h3>Cash position, by week</h3></div><span class="cash-gap" data-cash-gap>$0 gap</span></div>
-    <div class="cash-chart" data-cash-chart>
-      <div class="cash-week is-on" data-cash-week="0"><span>W2</span><i class="cash-draw" style="--h:0%" data-h="72"></i><i class="cash-pay" style="--h:0%" data-h="38"></i></div>
-      <div class="cash-week" data-cash-week="1"><span>W3</span><i class="cash-draw" style="--h:0%" data-h="80"></i><i class="cash-pay" style="--h:0%" data-h="52"></i></div>
-      <div class="cash-week" data-cash-week="2"><span>W4</span><i class="cash-draw" style="--h:0%" data-h="86"></i><i class="cash-pay" style="--h:0%" data-h="67"></i></div>
-      <div class="cash-week" data-cash-week="3"><span>W6</span><i class="cash-draw" style="--h:0%" data-h="92"></i><i class="cash-pay" style="--h:0%" data-h="100"></i></div>
-    </div>
-    <div class="cash-legend"><span><i></i>Draw</span><span><i></i>Payroll</span></div>
-    <div class="cash-tabs"><button data-cash-tab="0" class="is-on">Week 2</button><button data-cash-tab="1">Week 3</button><button data-cash-tab="2">Week 4</button><button data-cash-tab="3">Week 6</button></div>
-    <p class="cash-note" data-cash-note>Select a week to see the projected gap.</p>
-  </div>
-</div>`;
-
-const dispatchScreen = `<div class="dscreen" data-screen="dispatch" aria-label="Fleet and Workforce dispatch preview">
-  ${bar('DJS / Fleet + Workforce · Monday', '2 unassigned')}
-  <div class="dscreen__body">
-    <div class="dispatch-head"><span>Pasadena TI · 07:00 gate</span><span class="pill pill--warn" data-dispatch-state>2 unassigned</span></div>
-    <div class="dispatch-rows" data-dispatch-rows>
-      <div class="drow"><span class="drow__time">07:00</span><span class="drow__what"><b>Boom lift</b><small>Fleet · gate 3</small></span><span class="drow__assign" data-dispatch-assign>Book equipment</span></div>
-      <div class="drow"><span class="drow__time">07:00</span><span class="drow__what"><b>2 electricians</b><small>Workforce · certified</small></span><span class="drow__assign" data-dispatch-assign>Check crew</span></div>
-      <div class="drow"><span class="drow__time">06:45</span><span class="drow__what"><b>Conduit delivery</b><small>Exchange · 11-day lead</small></span><span class="drow__assign" data-dispatch-assign>Confirm slot</span></div>
-    </div>
-    <div class="dispatch-track"><i data-dispatch-progress></i></div>
-    <div class="dispatch-caption"><span data-dispatch-line>Three things to stage before the gate.</span><span class="mono" data-dispatch-count>0 / 3 ready</span></div>
-  </div>
-</div>`;
-
-const demos = `
-<section class="phero"><div class="wrap phero__in">
-  <div><div class="crumbs"><a href="index.html">Home</a> / <span>Product previews</span></div><span class="eyebrow">The desk / in motion</span>
-    <h1 class="phero__h1">Watch the desk <em>work.</em></h1><p class="lede">Five small screens, each doing a real job. Press play, change a week, send a request — the animations show what the product actually does.</p></div>
-  <div class="phero__meta"><span class="pill pill--live"><i></i>5 interactive previews</span><span class="coord">Illustrative · not a live account</span><a class="btn btn--accent" data-magnetic href="join.html">Open a free desk <span class="arrow">→</span></a></div>
-</div></section>
-
-<section class="sec"><div class="wrap">
-  <div class="sec__head" data-obs><div><h2 class="h2">Pick a screen</h2><p class="lede">They start themselves when you scroll to them. Every one can be replayed.</p></div></div>
-  <div class="chips" data-obs>
-    <a class="chip" href="#fit">01 · Fit scoring</a><a class="chip" href="#send">02 · Supplier replies</a>
-    <a class="chip" href="#route">03 · Pursuit board</a><a class="chip" href="#cash">04 · Cash gap</a>
-    <a class="chip" href="#dispatch">05 · Dispatch</a>
-  </div>
-</div></section>
-
-${demoSection('fit', 1, 'Projects', 'A bid arrives already ranked', 'Opportunities are scored against your licence, your crew and the drive from your yard. Cycle through three to see the fit change — and why the third one is worth a second look.', fitScreen, 'Next opportunity', 'modes.html#projects')}
-${demoSection('send', 2, 'Exchange', 'One request, three readable replies', 'A subagent drafts the supplier request from the scope. You approve it, then the quotes come back into the same thread. No phone tag, no re-keying.', sendScreen, 'Send the request', 'modes.html#exchange')}
-${demoSection('route', 3, 'Platform', 'The pursuit moves, the notes stay', 'Scope, quotes and the next action travel with the job. Advance the card and watch the record keep its history at every stage.', routeScreen, 'Advance the job', 'modes.html#platform')}
-${demoSection('cash', 4, 'Capital', 'See the gap before payroll lands', 'Draw and payroll sit on the same chart by week. Pick a week to watch the projection move from a quiet number to one you can act on.', cashScreen, 'Step through the weeks', 'modes.html#capital')}
-${demoSection('dispatch', 5, 'Fleet + Workforce', 'Stage the morning in one pass', 'Crew certifications, equipment and material delivery all read from the job. Book the morning and watch the gate time fill in.', dispatchScreen, 'Dispatch the morning', 'modes.html#fleet')}
-
-${ctaStrip()}`;
-
 /* ---------------- 404 ---------------- */
 const notfound = `<section class="wrap notfound"><div class="notfound__code">404</div><span class="eyebrow">Off the survey grid</span><h1 class="h1">That parcel isn't on the map.</h1><p class="lede center" style="margin-inline:auto">The page moved or never existed. The desk is still where you left it.</p><div style="display:flex;gap:12px;justify-content:center;margin-top:24px"><a class="btn btn--accent" href="index.html">Back to the desk</a><a class="btn btn--line" href="modes.html">Browse nine modes</a></div></section>`;
 
 const files = {
   'index.html': ['The construction desk for Southern California', 'Find the work, price it, build it. One account for the full job lifecycle — projects, bids, supply, capital, crews, fleet and finished-work proof.', home],
   'modes.html': ['Nine modes, one desk', 'Projects, Exchange, Platform, Solutions, Supply, Capital, Workforce, Fleet and Studio — one connected record for every job.', modes],
-  'demos.html': ['Product previews', 'Five interactive product previews: fit scoring, supplier replies, pursuit board, cash gap and dispatch — all in motion.', demos],
   'how-it-works.html': ['How a job moves', 'Follow one Pasadena tenant improvement from the first lead to the next customer through the D&J Stratagem desk.', how],
   'approvals.html': ['Automation that waits for your yes', 'Subagents prepare real work across the pipeline. A person approves every run before anything is sent.', approvals],
   'estimator.html': ['Bid estimator', 'Model your week: bids, job value, estimating hours and the hours a connected desk gives back.', estimator],

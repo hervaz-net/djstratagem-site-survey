@@ -72,15 +72,33 @@
     let timer;
     const openMega = (bool) => {
       clearTimeout(timer);
-      if (bool) { mega.hidden = false; requestAnimationFrame(() => mega.classList.add('is-open')); }
+      if (bool) { mega.hidden = false; mega.classList.add('is-open'); }
       else { mega.classList.remove('is-open'); timer = setTimeout(() => { mega.hidden = true; }, 200); }
       if (megaBtn) megaBtn.setAttribute('aria-expanded', String(bool));
     };
+    let pointerFocus = false;
+    megaRoot.addEventListener('pointerdown', () => { pointerFocus = true; });
+    addEventListener('pointerup', () => { pointerFocus = false; });
     megaRoot.addEventListener('mouseenter', () => openMega(true));
     megaRoot.addEventListener('mouseleave', () => openMega(false));
-    megaRoot.addEventListener('focusin', () => openMega(true));
+    // Keyboard focus opens the panel; pointer focus is handled by hover / tap.
+    megaRoot.addEventListener('focusin', () => { if (!pointerFocus) openMega(true); });
     megaRoot.addEventListener('focusout', (e) => { if (!megaRoot.contains(e.relatedTarget)) openMega(false); });
-    addEventListener('keydown', e => { if (e.key === 'Escape') openMega(false); });
+    // Touch devices have no hover: tap the trigger to toggle the panel.
+    if (megaBtn) megaBtn.addEventListener('click', e => {
+      if (matchMedia('(hover: none)').matches) {
+        e.preventDefault();
+        openMega(!mega.classList.contains('is-open'));
+      }
+    });
+    addEventListener('keydown', e => {
+      if (e.key === 'Escape' && mega.classList.contains('is-open')) {
+        // Focus first: focusing the trigger fires focusin, which would reopen
+        // the panel if we closed it before moving focus.
+        if (megaBtn) megaBtn.focus();
+        openMega(false);
+      }
+    });
   }
 
   /* ---------- mobile drawer ---------- */
@@ -514,23 +532,23 @@
 
   /* ---------- mode data (shared by the sheet and the palette) ---------- */
   const MODES = [
-    ['Projects', 'find', 'Bid invitations and public work filtered to the trades you actually self-perform and the counties you actually drive to.', ['Trade fit against licence and crew', 'Drive time from your yard', 'Owner and GC history attached'], '92% fit on the Pasadena TI'],
-    ['Exchange', 'find', 'Post what you need, see who actually stocks it, and keep buyer and supplier reading the same request.', ['One readable request', 'Stock confirmed before you call', 'Buyer and supplier in sync'], '3 suppliers matched in 40 min'],
-    ['Platform', 'win', 'The pursuit workspace behind every job: scope, takeoff notes, quotes, the next action and who owes it.', ['Scope and quotes on the job', 'Every revision kept', 'Next action always named'], '6 active pursuits · 0 lost notes'],
-    ['Solutions', 'win', 'A connected setup for each side of the job — GC, sub, supplier — without three separate logins.', ['One identity per company', 'Permissions by role', 'No re-keying across sides'], 'GC · sub · supplier, one desk'],
-    ['Supply', 'build', 'Source material against the real schedule, with lead times attached to the job that needs them.', ['Lead times on the schedule', 'Quotes compared side by side', 'Substitution flagged early'], 'Conduit order · 11-day lead'],
-    ['Capital', 'build', 'See the cash gap between draw and payroll before it happens, not during it.', ['Draw vs payroll by week', 'Gap surfaced a month out', 'Numbers stay with the job'], '$48k gap, seen 4 weeks early'],
-    ['Workforce', 'build', 'Match certified crews to the work ahead and keep the roster honest week to week.', ['Certifications checked', 'Crew booked to dates', 'Roster stays current'], '2 crews certified and available'],
-    ['Fleet', 'build', 'Get trucks, lifts and equipment to the gate on the morning the work starts.', ['Equipment tied to the job', 'Gate time, not a guess', 'Conflicts visible early'], 'Boom lift booked for 7am'],
-    ['Studio', 'keep', 'Turn a finished job into the thing that wins the next one: photos, scope, numbers, a reference that holds up.', ['Project page for an owner', 'Performance carried forward', 'Repeat customers surfaced'], 'Pasadena TI · complete'],
+    ['Projects', 'find', 'Bid invitations and public work filtered to the trades you actually self-perform and the counties you actually drive to.', ['Trade fit against licence and crew', 'Drive time from your yard', 'Owner and GC history attached'], '92% fit on the Pasadena TI', 'Fit-scored bid invitations'],
+    ['Exchange', 'find', 'Post what you need, see who actually stocks it, and keep buyer and supplier reading the same request.', ['One readable request', 'Stock confirmed before you call', 'Buyer and supplier in sync'], '3 suppliers matched in 40 min', 'One request, real replies'],
+    ['Platform', 'win', 'The pursuit workspace behind every job: scope, takeoff notes, quotes, the next action and who owes it.', ['Scope and quotes on the job', 'Every revision kept', 'Next action always named'], '6 active pursuits · 0 lost notes', 'Scope, quotes, next action'],
+    ['Solutions', 'win', 'A connected setup for each side of the job — GC, sub, supplier — without three separate logins.', ['One identity per company', 'Permissions by role', 'No re-keying across sides'], 'GC · sub · supplier, one desk', 'One identity per company'],
+    ['Supply', 'build', 'Source material against the real schedule, with lead times attached to the job that needs them.', ['Lead times on the schedule', 'Quotes compared side by side', 'Substitution flagged early'], 'Conduit order · 11-day lead', 'Lead times on the schedule'],
+    ['Capital', 'build', 'See the cash gap between draw and payroll before it happens, not during it.', ['Draw vs payroll by week', 'Gap surfaced a month out', 'Numbers stay with the job'], '$48k gap, seen 4 weeks early', 'Draw vs payroll by week'],
+    ['Workforce', 'build', 'Match certified crews to the work ahead and keep the roster honest week to week.', ['Certifications checked', 'Crew booked to dates', 'Roster stays current'], '2 crews certified and available', 'Certified crews, booked'],
+    ['Fleet', 'build', 'Get trucks, lifts and equipment to the gate on the morning the work starts.', ['Equipment tied to the job', 'Gate time, not a guess', 'Conflicts visible early'], 'Boom lift booked for 7am', 'Equipment at the gate'],
+    ['Studio', 'keep', 'Turn a finished job into the thing that wins the next one: photos, scope, numbers, a reference that holds up.', ['Project page for an owner', 'Performance carried forward', 'Repeat customers surfaced'], 'Pasadena TI · complete', 'Proof for the next job'],
   ];
 
   /* ---------- command palette ---------- */
   const CMD = [
     ['Home', 'page', 'index.html'], ['Nine modes', 'page', 'modes.html'],
-    ['Product previews', 'demo', 'demos.html'], ['Fit scoring demo', 'demo', 'demos.html#fit'],
-    ['Supplier replies demo', 'demo', 'demos.html#send'], ['Pursuit board demo', 'demo', 'demos.html#route'],
-    ['Cash gap demo', 'demo', 'demos.html#cash'], ['Dispatch demo', 'demo', 'demos.html#dispatch'],
+    ['Fit scoring', 'demo', 'index.html#fit'], ['Supplier replies', 'demo', 'modes.html#send'],
+    ['Pursuit board', 'demo', 'how-it-works.html#route'], ['Cash gap', 'demo', 'estimator.html#cash'],
+    ['Dispatch', 'demo', 'approvals.html#dispatch'],
     ['How a job moves', 'page', 'how-it-works.html'], ['Approvals', 'page', 'approvals.html'],
     ['Bid estimator', 'tool', 'estimator.html'], ['Coverage map', 'page', 'coverage.html'],
     ['Pricing and plans', 'page', 'pricing.html'], ['Join the desk', 'action', 'join.html'],
@@ -574,7 +592,7 @@
     if (e.key === 'Enter') { e.preventDefault(); runCmd(results[sel]); }
   });
 
-  /* ---------- product previews ---------- */
+  /* ---------- embedded motion screens ---------- */
   const DEMOS = {};
   const replay = el => { if (!el) return; el.classList.remove('is-swap'); void el.offsetWidth; el.classList.add('is-swap'); };
   const setPill = (screen, text) => {
