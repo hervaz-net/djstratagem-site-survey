@@ -62,10 +62,10 @@ function shell(file, title, desc, content) {
 
 <div class="topbar" data-topbar>
   <div class="topbar__track"><div class="topbar__marquee">
-    <span>New · Fleet dispatch is live in Los Angeles and Orange County</span><span class="dot"></span>
+    <span>New · Live in LA County, Orange County and the San Fernando Valley</span><span class="dot"></span>
     <span>14 new commercial bids posted this week</span><span class="dot"></span>
     <span>Every company is reviewed by a person before it joins</span><span class="dot"></span>
-    <span>New · Fleet dispatch is live in Los Angeles and Orange County</span><span class="dot"></span>
+    <span>New · Live in LA County, Orange County and the San Fernando Valley</span><span class="dot"></span>
     <span>14 new commercial bids posted this week</span><span class="dot"></span>
     <span>Every company is reviewed by a person before it joins</span><span class="dot"></span>
   </div></div>
@@ -88,7 +88,7 @@ function shell(file, title, desc, content) {
               <a class="mega__link" href="approvals.html"><span class="mega__ic"></span><span><strong>Approvals</strong><small>Automation with a human gate.</small></span></a>
               <a class="mega__link" href="estimator.html"><span class="mega__ic"></span><span><strong>Bid estimator</strong><small>Model your week.</small></span></a>
               <div class="mega__promo"><span class="pill pill--live"><i></i>Live</span>
-                <p>Pasadena TI package cleared review — 3 suppliers matched.</p>
+                <p>Pasadena TI brief ready for review — 3 suppliers matched.</p>
                 <a class="link" href="join.html">Open the desk</a></div>
             </div>
           </div>
@@ -173,7 +173,7 @@ const home = `
       </dl>
     </div>
     <aside class="jobcard" data-tilt data-obs>
-      <header class="jobcard__top"><div><span class="mono tiny">DJS · 014</span><h3>Commercial tenant improvement</h3><p class="mono tiny muted">Pasadena, CA · Electrical · $280k–$340k</p></div><span class="pill pill--live"><i></i>In motion</span></header>
+      <header class="jobcard__top"><div><span class="mono tiny">DJS-014</span><h3>Commercial tenant improvement</h3><p class="mono tiny muted">Pasadena, CA · Electrical · $280k–$340k</p></div><span class="pill pill--live"><i></i>In motion</span></header>
       <ol class="pipe" data-pipe>
         <li class="pipe__step is-done"><span class="pipe__dot"></span><span>Found<em>Matched to your trade</em></span></li>
         <li class="pipe__step is-done"><span class="pipe__dot"></span><span>Priced<em>Bid built from 3 quotes</em></span></li>
@@ -193,7 +193,7 @@ const home = `
 </div></section>
 
 <section class="sec"><div class="wrap">
-  <div class="sec__head" data-obs><div><span class="eyebrow">01 / The desk</span><h2 class="h2">Nine modes, one desk</h2><p class="lede">The parts of a job already depend on each other. Your tools finally do too — move the whole pipeline without starting over somewhere else.</p></div><a class="btn btn--line" href="modes.html">See all nine <span class="arrow">→</span></a></div>
+  <div class="sec__head" data-obs><div><span class="eyebrow">01 / The desk</span><h2 class="h2">Nine modes, one desk</h2><p class="lede">The parts of a job already depend on each other. Your tools finally do too — move the whole pipeline without starting over somewhere else.</p><p class="tiny muted" style="margin-top:12px">Plus Workforce, Fleet and Studio — see all nine.</p></div><a class="btn btn--line" href="modes.html">See all nine <span class="arrow">→</span></a></div>
   <div class="bento stagger" data-bento>
     ${MODES.slice(0, 6).map((m, i) => `<article class="card${i === 0 ? ' card--xl' : i === 3 ? ' card--wide' : ''}" data-group="${m[1]}" data-glow data-obs style="--i:${i}">
       <span class="card__stage">${m[1].toUpperCase()}</span><span class="mode-card__num mono">0${i + 1}</span>
@@ -268,7 +268,7 @@ const modes = `
   <div><div class="crumbs"><a href="index.html">Home</a> / <span>Nine modes</span></div><span class="eyebrow">The desk / 01</span>
     <h1 class="phero__h1">Nine modes.<br><em>One job.</em></h1>
     <p class="lede">Find it, win it, build it, keep it. Each mode does one job well and already shares the same job record with the others.</p></div>
-  <div class="phero__meta"><span class="pill pill--live"><i></i>All nine connected</span><span class="coord">DJS · 014 / Pasadena TI</span><a class="btn btn--accent" data-magnetic href="join.html">Open a free desk <span class="arrow">→</span></a></div>
+  <div class="phero__meta"><span class="pill pill--live"><i></i>All nine connected</span><span class="coord">DJS-014 / Pasadena TI</span><a class="btn btn--accent" data-magnetic href="join.html">Open a free desk <span class="arrow">→</span></a></div>
 </div></section>
 
 <section class="sec"><div class="wrap">
@@ -316,12 +316,12 @@ const how = `
     <article class="chapter" data-chapter><div><span class="chapter__n">Chapter 01 / Find</span><h3>The lead arrives already filtered</h3><p>Opportunities surface by trade and territory, so the first thing you read is already worth reading. The owner and GC history come attached.</p><ul class="ticks"><li>Trade fit against your licence and crew</li><li>Drive time from your yard</li><li>Owner and GC history attached</li></ul></div><div class="chapter__art"><div class="feed" data-feed></div></div></article>
     <article class="chapter" data-chapter><div><span class="chapter__n">Chapter 02 / Win</span><h3>Price it without rebuilding the scope</h3><p>Quotes, exclusions and the bid form live on the job, so the number you send is the number you can defend.</p><ul class="ticks"><li>Three supplier quotes side by side</li><li>Scope gaps flagged early</li><li>Every revision kept with who changed it</li></ul></div><div class="chapter__art"><div class="quote-stack"><div class="quote"><span class="mono">Alpine Electric Supply</span><b>$184,200</b></div><div class="quote quote--best"><span class="mono">Harbor Wholesale</span><b>$176,840</b><em>Best</em></div><div class="quote"><span class="mono">Inland Conduit Co.</span><b>$191,500</b></div></div></div></article>
     <article class="chapter" data-chapter><div><span class="chapter__n">Chapter 03 / Build</span><h3>Material, cash, crew and trucks on one job</h3><p>When the award lands, the pieces are already attached — nothing gets re-keyed into another system.</p><ul class="ticks"><li>Lead times mapped to the build schedule</li><li>Draw vs payroll visible by week</li><li>Crew and equipment booked to the same dates</li></ul></div><div class="chapter__art"><div class="gantt"><i style="--s:0;--w:30%"></i><i style="--s:18%;--w:40%"></i><i style="--s:42%;--w:34%"></i><i style="--s:66%;--w:28%"></i></div></div></article>
-    <article class="chapter" data-chapter><div><span class="chapter__n">Chapter 04 / Keep</span><h3>Finished work becomes the next lead</h3><p>Close-out photos, final numbers and the reference go into Studio, ready for the next proposal.</p><ul class="ticks"><li>Project page you can send to an owner</li><li>Performance carried into future bids</li><li>Repeat customers surfaced automatically</li></ul></div><div class="chapter__art"><div class="proof"><div class="proof__img"></div><div class="proof__meta"><b>Pasadena TI · Complete</b><span class="mono tiny">On time · 2 RFIs · $312,400 final</span></div></div></div></article>
+    <article class="chapter" data-chapter><div><span class="chapter__n">Chapter 04 / Keep</span><h3>Finished work becomes the next lead</h3><p>Close-out photos, final numbers and the reference go into Studio, ready for the next proposal.</p><ul class="ticks"><li>Project page you can send to an owner</li><li>Performance carried into future bids</li><li>Repeat customers surfaced automatically</li></ul></div><div class="chapter__art"><div class="proof"><div class="proof__img"></div><div class="proof__meta"><b>Sample close-out · Pasadena TI</b><span class="mono tiny">On time · 2 RFIs · $312,400 final</span></div></div></div></article>
   </div>
 </div></section>
 
 <section class="sec sec--alt"><div class="wrap two" data-obs><div><span class="eyebrow">Same record</span><h2 class="h2">Click through the job</h2><p class="lede">The live card below tracks a real pursuit. Step through the pipeline to see what each stage adds.</p></div>
-  <aside class="jobcard" data-tilt><header class="jobcard__top"><div><span class="mono tiny">DJS · 014</span><h3>Commercial tenant improvement</h3><p class="mono tiny muted">Pasadena, CA · Electrical</p></div><span class="pill pill--live"><i></i>In motion</span></header>
+  <aside class="jobcard" data-tilt><header class="jobcard__top"><div><span class="mono tiny">DJS-014</span><h3>Commercial tenant improvement</h3><p class="mono tiny muted">Pasadena, CA · Electrical</p></div><span class="pill pill--live"><i></i>In motion</span></header>
     <ol class="pipe" data-pipe>
       <li class="pipe__step is-done"><span class="pipe__dot"></span><span>Found<em>Matched to your trade</em></span></li>
       <li class="pipe__step is-done"><span class="pipe__dot"></span><span>Priced<em>Bid built from 3 quotes</em></span></li>
@@ -420,7 +420,7 @@ const coverage = `
 <section class="phero"><div class="wrap phero__in">
   <div><div class="crumbs"><a href="index.html">Home</a> / <span>Coverage</span></div><span class="eyebrow">The ground / 05</span>
     <h1 class="phero__h1">Where the crews <em>already drive.</em></h1><p class="lede">Los Angeles first, then the counties the same trucks already reach. Hover a marker to see what is open.</p></div>
-  <div class="phero__meta"><span class="pill pill--live"><i></i>3 counties live</span><span class="coord">34°08′N 118°08′W</span></div>
+  <div class="phero__meta"><span class="pill pill--live"><i></i>3 markets live</span><span class="coord">34°08′N 118°08′W</span></div>
 </div></section>
 
 <section class="sec"><div class="wrap two two--map" data-obs>
@@ -493,7 +493,7 @@ const pricing = `
 <section class="sec" id="faq"><div class="wrap narrow"><h2 class="h2" data-obs>Questions people actually ask</h2>
   <div class="acc" data-acc data-obs>
     <details class="acc__item" open><summary>Who gets into the network?<span class="acc__ic"></span></summary><div class="acc__body"><p>Contractors, subcontractors and suppliers working in Southern California. A person reviews the licence, the trade and the service area before an account goes live — usually within a business day.</p></div></details>
-    <details class="acc__item"><summary>Do I have to use all nine modes?<span class="acc__ic"></span></summary><div class="acc__body"><p>No. Most shops start with Projects and Platform — find the work, price the work. The rest switch on when a job needs them, and they already share your job data when they do.</p></div></details>
+    <details class="acc__item"><summary>Do I have to use all nine modes?<span class="acc__ic"></span></summary><div class="acc__body"><p>No. Most shops start on Yard with Projects and Exchange; Platform switches on with Desk when a pursuit needs it. The rest switch on the same way, and they already share your job data when they do.</p></div></details>
     <details class="acc__item"><summary>What do the subagents actually do?<span class="acc__ic"></span></summary><div class="acc__body"><p>They prepare work: scoring whether an invitation fits your trade, drafting a supplier request from the scope, assembling the next action on a pursuit. They never send, buy or commit anything. A person approves each run.</p></div></details>
     <details class="acc__item"><summary>Is my pricing visible to anyone else?<span class="acc__ic"></span></summary><div class="acc__body"><p>Your quotes, margins and bid numbers are yours. Suppliers see the request you send them; general contractors see the bid you submit. Nothing else crosses company lines.</p></div></details>
     <details class="acc__item"><summary>We already run Procore. Does this replace it?<span class="acc__ic"></span></summary><div class="acc__body"><p>No. Project management starts after the award. Stratagem covers the part before it — finding, pricing and winning the job — and hands the won job off with its context intact.</p></div></details>
