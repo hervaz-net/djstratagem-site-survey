@@ -1,0 +1,11 @@
+{
+  "name": "djstratagem-site-survey",
+  "version": "2.0.0",
+  "private": true,
+  "description": "D&J Stratagem — multi-page Site Survey site, Sass source + compiled CSS",
+  "scripts": {
+    "build": "sh build.sh",
+    "dev": "npx --yes serve . -l 4173",
+    "deploy": "sh deploy.sh"
+  }
+}

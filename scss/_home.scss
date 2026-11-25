@@ -1,0 +1,50 @@
+// Home-only: the survey hero and the job-motion rail.
+@use 'tools' as t;
+
+.hero { position: relative; overflow: hidden; padding: clamp(48px, 7vw, 104px) 0 clamp(56px, 7vw, 96px); }
+.hero__grid { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .85; }
+.hero__glow {
+  position: absolute;
+  width: 620px;
+  height: 620px;
+  border-radius: 50%;
+  pointer-events: none;
+  left: var(--mx, 50%);
+  top: var(--my, 30%);
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--ds-accent) 20%, transparent), transparent 62%);
+  transition: opacity 400ms var(--ds-ease), left 500ms var(--ds-ease-out), top 500ms var(--ds-ease-out);
+  opacity: .8;
+  filter: blur(16px);
+}
+.hero__in { position: relative; display: grid; grid-template-columns: 1.08fr .92fr; gap: clamp(32px, 5vw, 72px); align-items: center; }
+.hero__tag { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: var(--ds-space-5); }
+.hero__h1 { font-family: var(--ds-font-display); font-size: var(--ds-text-3xl); font-weight: 800; line-height: .96; letter-spacing: -.035em; margin: 0 0 var(--ds-space-5); }
+.hero__h1 .line { display: block; overflow: hidden; }
+.reveal-in { display: block; transform: translateY(104%); animation: lineUp 900ms var(--ds-ease-out) forwards; }
+.hero__h1 .line--accent { color: var(--ds-accent); }
+.hero__lede { max-width: 54ch; font-size: var(--ds-text-lg); color: var(--ds-text-muted); margin: 0 0 var(--ds-space-6); }
+.hero__cta { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: var(--ds-space-8); }
+.hero__ruler { position: absolute; left: 0; right: 0; bottom: 0; height: 18px; @include t.grid-lines(24px); background-image: repeating-linear-gradient(90deg, var(--ds-grid-line) 0 1px, transparent 1px 24px); border-bottom: 1px solid var(--ds-border); mask-image: linear-gradient(90deg, transparent, #000 15%, #000 85%, transparent); }
+
+// Horizontal job-motion rail on the home page.
+.rail { position: relative; margin-top: var(--ds-space-7); padding: var(--ds-space-6) 0 0; }
+.rail::before { content: ''; position: absolute; left: 0; right: 0; top: 50px; height: 1px; background: var(--ds-border); }
+.rail__track { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--ds-space-4); position: relative; }
+.rail__stop { position: relative; padding-top: 26px; cursor: pointer; }
+.rail__stop::before { content: ''; position: absolute; top: 42px; left: 0; width: 15px; height: 15px; border-radius: 50%; background: var(--ds-surface); border: 2px solid var(--ds-border); z-index: 1; transition: all 260ms var(--ds-ease-out); }
+.rail__stop.is-on::before { background: var(--ds-accent); border-color: var(--ds-accent); box-shadow: 0 0 0 5px color-mix(in srgb, var(--ds-accent) 20%, transparent); }
+.rail__stop small { @include t.eyebrow; }
+.rail__stop b { display: block; font-family: var(--ds-font-display); font-size: var(--ds-text-lg); letter-spacing: -.02em; margin: 6px 0; }
+.rail__stop p { margin: 0; font-size: var(--ds-text-sm); color: var(--ds-text-muted); }
+.rail__detail { margin-top: var(--ds-space-6); @include t.card-surface; padding: var(--ds-space-6); min-height: 160px; animation: fadeUp 380ms var(--ds-ease-out); }
+.rail__detail h4 { font-family: var(--ds-font-display); font-size: var(--ds-text-xl); margin: 0 0 10px; letter-spacing: -.02em; }
+.rail__detail p { margin: 0; max-width: 70ch; color: var(--ds-text-muted); }
+
+.teaser { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 5vw, 72px); align-items: center; }
+.teaser--reverse .teaser__art { order: -1; }
+.teaser__art { @include t.card-surface; padding: var(--ds-space-6); min-height: 300px; position: relative; overflow: hidden; }
+.teaser__art::before { content: ''; position: absolute; inset: 0; @include t.grid-lines; opacity: .7; pointer-events: none; }
+.teaser__art > * { position: relative; }
+.mini-map { aspect-ratio: 16/10; border: 1px dashed var(--ds-border); border-radius: var(--ds-radius-md); position: relative; background: color-mix(in srgb, var(--ds-accent-2) 5%, transparent); }
+.mini-map i { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: var(--ds-success); box-shadow: 0 0 0 0 color-mix(in srgb, var(--ds-success) 60%, transparent); animation: ping 2.6s infinite; }

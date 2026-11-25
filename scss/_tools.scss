@@ -1,0 +1,63 @@
+// Tools — no CSS output. Shared mixins + breakpoint map.
+@use 'sass:map';
+
+$ranges: (
+  lg: 1080px,
+  md: 900px,
+  sm: 620px,
+);
+
+@mixin below($key) {
+  @media (max-width: map.get($ranges, $key)) { @content; }
+}
+
+@mixin card-surface($bg: var(--ds-surface)) {
+  background: $bg;
+  border: 1px solid var(--ds-border);
+  border-radius: var(--ds-radius-lg);
+}
+
+@mixin focus-ring {
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--ds-focus-ring);
+    border-radius: var(--ds-radius-sm);
+  }
+}
+
+@mixin hover-lift($amount: -4px) {
+  transition: transform var(--ds-duration) var(--ds-ease-out), border-color var(--ds-duration) var(--ds-ease), box-shadow var(--ds-duration) var(--ds-ease);
+  &:hover { transform: translateY($amount); }
+}
+
+@mixin underline {
+  position: relative;
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    height: 1px;
+    width: 100%;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 260ms var(--ds-ease-out);
+  }
+  &:hover::after { transform: scaleX(1); }
+}
+
+@mixin eyebrow {
+  font-family: var(--ds-font-mono);
+  font-size: 11px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ds-accent);
+}
+
+@mixin grid-lines($size: 34px) {
+  background-image:
+    linear-gradient(var(--ds-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--ds-grid-line) 1px, transparent 1px);
+  background-size: $size $size;
+}

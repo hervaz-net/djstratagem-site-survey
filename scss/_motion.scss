@@ -1,0 +1,99 @@
+// Motion layer — keyframes, reveal primitives, and interaction choreography.
+@use 'tools' as t;
+
+// The one ambient loop: slow survey ticks + two marquees. Everything else is
+// triggered by a click, a hover, or the user's scroll position.
+
+@keyframes slide { to { transform: translateX(-50%); } }
+@keyframes lineUp { to { transform: none; } }
+@keyframes ping {
+  0%   { box-shadow: 0 0 0 0 color-mix(in srgb, currentColor 60%, transparent); }
+  70%  { box-shadow: 0 0 0 7px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+@keyframes grow { from { transform: scaleY(0); } }
+@keyframes wipe { from { transform: scaleX(0); } }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } }
+@keyframes fade { from { opacity: 0; } }
+@keyframes pop { from { opacity: 0; transform: translateY(-10px) scale(.97); } }
+@keyframes slideIn { from { transform: translateX(100%); } }
+@keyframes sheetIn { from { transform: translateX(40px); opacity: 0; } }
+@keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: 0 0; } }
+@keyframes toastIn { from { opacity: 0; transform: translateY(14px) scale(.96); } }
+@keyframes toastOut { to { opacity: 0; transform: translateY(10px); } }
+@keyframes accOpen { from { opacity: 0; transform: translateY(-6px); } }
+@keyframes pulseLine { 50% { opacity: .35; } }
+@keyframes floatY { 50% { transform: translateY(-8px); } }
+@keyframes spinSlow { to { transform: rotate(360deg); } }
+@keyframes wipeAcross {
+  0%   { transform: translateX(-102%); }
+  50%  { transform: translateX(0); }
+  100% { transform: translateX(102%); }
+}
+@keyframes countFlash { 50% { color: var(--ds-accent); } }
+
+// Scroll reveal. JS adds .is-in when the element crosses the observer line.
+[data-obs] {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 620ms var(--ds-ease-out), transform 620ms var(--ds-ease-out);
+  transition-delay: var(--delay, 0ms);
+}
+[data-obs].is-in { opacity: 1; transform: none; }
+
+// Stagger helper: children get --delay from JS or from nth-child rules.
+.stagger > * { --delay: calc(var(--i, 0) * 70ms); }
+
+// Page entrance — every page arrives the same way.
+body.is-ready main > section:first-child { animation: fadeUp 700ms var(--ds-ease-out) both; }
+
+// Page wipe overlay, used on internal navigation.
+.page-wipe {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  pointer-events: none;
+  display: grid;
+  place-items: center;
+  background: var(--ds-bg);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 180ms var(--ds-ease), visibility 180ms;
+}
+.page-wipe span {
+  position: absolute;
+  inset: 0;
+  background: var(--ds-accent);
+  transform: translateX(-102%);
+}
+.page-wipe.is-on { opacity: 1; visibility: visible; }
+.page-wipe.is-on span { animation: wipeAcross 640ms var(--ds-ease-out) forwards; }
+
+// Pointer-reactive glow. --gx/--gy are written by app.js.
+[data-glow] { position: relative; overflow: hidden; isolation: isolate; }
+[data-glow]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(260px circle at var(--gx, 50%) var(--gy, 50%), color-mix(in srgb, var(--ds-accent) 15%, transparent), transparent 70%);
+  transition: opacity 240ms var(--ds-ease);
+}
+[data-glow]:hover::after { opacity: 1; }
+
+[data-magnetic] { will-change: transform; transition: transform 160ms var(--ds-ease-out) !important; }
+[data-tilt] { transform-style: preserve-3d; transition: transform 300ms var(--ds-ease-out); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+  [data-obs] { opacity: 1; transform: none; }
+  .page-wipe { display: none; }
+}
