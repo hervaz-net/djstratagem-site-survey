@@ -528,6 +528,9 @@
   /* ---------- command palette ---------- */
   const CMD = [
     ['Home', 'page', 'index.html'], ['Nine modes', 'page', 'modes.html'],
+    ['Product previews', 'demo', 'demos.html'], ['Fit scoring demo', 'demo', 'demos.html#fit'],
+    ['Supplier replies demo', 'demo', 'demos.html#send'], ['Pursuit board demo', 'demo', 'demos.html#route'],
+    ['Cash gap demo', 'demo', 'demos.html#cash'], ['Dispatch demo', 'demo', 'demos.html#dispatch'],
     ['How a job moves', 'page', 'how-it-works.html'], ['Approvals', 'page', 'approvals.html'],
     ['Bid estimator', 'tool', 'estimator.html'], ['Coverage map', 'page', 'coverage.html'],
     ['Pricing and plans', 'page', 'pricing.html'], ['Join the desk', 'action', 'join.html'],
@@ -570,6 +573,245 @@
     if (e.key === 'ArrowUp') { e.preventDefault(); sel = Math.max(sel - 1, 0); paintSel(); }
     if (e.key === 'Enter') { e.preventDefault(); runCmd(results[sel]); }
   });
+
+  /* ---------- product previews ---------- */
+  const DEMOS = {};
+  const replay = el => { if (!el) return; el.classList.remove('is-swap'); void el.offsetWidth; el.classList.add('is-swap'); };
+  const setPill = (screen, text) => {
+    const p = $('[data-screen-pill]', screen);
+    if (p && p.lastChild) p.lastChild.nodeValue = text;
+  };
+  const tweenNum = (el, to, format = v => String(Math.round(v))) => {
+    if (!el) return;
+    const from = parseFloat(el.dataset.num || '0') || 0;
+    el.dataset.num = String(to);
+    if (reduce) { el.textContent = format(to); return; }
+    const t0 = performance.now(), dur = 680;
+    (function tick(now) {
+      const k = Math.min((now - t0) / dur, 1), e = 1 - Math.pow(1 - k, 3);
+      el.textContent = format(from + (to - from) * e);
+      if (k < 1) requestAnimationFrame(tick);
+    })(performance.now());
+  };
+  const stamp = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  // 01 — fit scoring
+  const fitScreen = $('[data-screen="fit"]');
+  if (fitScreen) {
+    const FIT = [
+      ['DJS-014', 'Commercial TI · Pasadena', 'Electrical · 12 min from your yard', 92, [95, 88, 90], 'Ready for your estimator'],
+      ['DJS-021', 'School modernisation · Norwalk', 'Electrical · 24 min from your yard', 78, [90, 70, 64], 'Crew check before you bid'],
+      ['DJS-033', 'Retail build-out · Irvine', 'Electrical · 41 min from your yard', 71, [88, 66, 45], 'Drive time above your limit'],
+    ];
+    let fitAt = -1;
+    DEMOS.fit = () => {
+      fitAt = (fitAt + 1) % FIT.length;
+      const [id, title, meta, score, bars, note] = FIT[fitAt];
+      $('[data-fit-id]', fitScreen).textContent = id;
+      $('[data-fit-title]', fitScreen).textContent = title;
+      $('[data-fit-meta]', fitScreen).textContent = meta;
+      $('[data-fit-line]', fitScreen).textContent = note;
+      $('[data-fit-step]', fitScreen).textContent = String(fitAt + 1).padStart(2, '0') + ' / 03';
+      $('[data-fit-score]', fitScreen).style.setProperty('--score', score);
+      tweenNum($('[data-fit-num]', fitScreen), score);
+      replay($('[data-fit-body]', fitScreen));
+      $$('[data-fit-bar]', fitScreen).forEach((b, i) => {
+        b.style.width = '0';
+        requestAnimationFrame(() => { b.style.width = bars[i] + '%'; });
+      });
+      setPill(fitScreen, 'Live scoring');
+    };
+    DEMOS.fit_reset = () => {
+      fitAt = -1;
+      $$('[data-fit-bar]', fitScreen).forEach(b => { b.style.width = '0'; });
+      $('[data-fit-score]', fitScreen).style.setProperty('--score', 0);
+      $('[data-fit-num]', fitScreen).dataset.num = '0';
+      $('[data-fit-num]', fitScreen).textContent = '0';
+      setTimeout(() => DEMOS.fit(), reduce ? 0 : 140);
+    };
+  }
+
+  // 02 — supplier request
+  const sendScreen = $('[data-screen="send"]');
+  if (sendScreen) {
+    const rows = $$('.send-row', sendScreen);
+    let sendTimers = [], sending = false;
+    const clearSend = () => {
+      sendTimers.forEach(clearTimeout); sendTimers = []; sending = false;
+      rows.forEach(r => {
+        r.classList.remove('is-ping', 'is-in', 'is-best');
+        $('.send-row__state', r).textContent = 'Waiting';
+        $('[data-send-price]', r).textContent = '—';
+      });
+      $('[data-send-line]', sendScreen).textContent = 'Request drafted. Nothing sent until you approve.';
+      $('[data-send-count]', sendScreen).textContent = '0 / 3 quotes';
+      setPill(sendScreen, 'Draft ready');
+    };
+    DEMOS.send = () => {
+      if (sending) return;
+      clearSend(); sending = true;
+      setPill(sendScreen, 'Sending');
+      $('[data-send-line]', sendScreen).textContent = 'Request approved and sent to 3 matched suppliers.';
+      rows.forEach((r, i) => {
+        sendTimers.push(setTimeout(() => r.classList.add('is-ping'), reduce ? 0 : 280 + i * 180));
+        sendTimers.push(setTimeout(() => {
+          r.classList.remove('is-ping'); r.classList.add('is-in');
+          $('.send-row__state', r).textContent = 'Quoted';
+          const price = $('[data-send-price]', r);
+          price.textContent = price.dataset.sendPrice;
+          $('[data-send-count]', sendScreen).textContent = (i + 1) + ' / 3 quotes';
+        }, reduce ? 0 : 1050 + i * 620));
+      });
+      sendTimers.push(setTimeout(() => {
+        rows[0].classList.add('is-best');
+        $('[data-send-line]', sendScreen).textContent = 'Best quote ready to compare. Nothing has gone to the GC.';
+        setPill(sendScreen, '3 quotes in');
+        sending = false;
+      }, reduce ? 0 : 2700));
+    };
+    DEMOS.send_reset = clearSend;
+  }
+
+  // 03 — pursuit board
+  const routeScreen = $('[data-screen="route"]');
+  if (routeScreen) {
+    const cols = $$('.kcol', routeScreen), card = $('[data-route-card]', routeScreen), log = $('[data-route-log]', routeScreen);
+    const STEPS = [
+      ['Matched to your trade · 92% fit', 'Brief prepared by a subagent. Awaiting your OK.'],
+      ['3 quotes attached · $176,840 selected', 'Bid assembled from three supplier quotes.'],
+      ['Bid sent · awaiting GC response', 'Bid submitted. Revision history kept on the job.'],
+      ['Crew and material staged · gate 07:00', 'Award landed. Supply, crew and fleet read one record.'],
+    ];
+    const initialLog = '<span><span class="mono">09:41</span> Subagent prepared the brief. Awaiting your OK.</span>';
+    let pos = 0, moved = false;
+    DEMOS.route = () => {
+      const next = moved ? (pos + 1) % 4 : 0;
+      pos = next; moved = true;
+      if (next > 0) {
+        card.classList.remove('is-moving'); void card.offsetWidth;
+        $('.kcol__slot', cols[next]).appendChild(card);
+        card.classList.add('is-moving');
+      } else replay(card);
+      cols.forEach((c, i) => c.classList.toggle('is-on', i === next));
+      $('small', card).textContent = STEPS[next][0];
+      if (next > 0) log.insertAdjacentHTML('beforeend', `<span><span class="mono">${stamp()}</span> ${STEPS[next][1]}</span>`);
+      setPill(routeScreen, next === 3 ? 'Build staged' : next === 2 ? 'In pursuit' : next === 1 ? 'Priced' : 'Human gate');
+    };
+    DEMOS.route_reset = () => {
+      pos = 0; moved = false;
+      $('.kcol__slot', cols[0]).appendChild(card);
+      cols.forEach((c, i) => c.classList.toggle('is-on', i === 0));
+      $('small', card).textContent = STEPS[0][0];
+      log.innerHTML = initialLog;
+      setPill(routeScreen, 'Human gate');
+    };
+  }
+
+  // 04 — cash gap
+  const cashScreen = $('[data-screen="cash"]');
+  if (cashScreen) {
+    const weeks = $$('.cash-week', cashScreen), tabs = $$('[data-cash-tab]', cashScreen), bars = $$('i[data-h]', cashScreen);
+    const gaps = [12, 19, 31, 48];
+    const notes = [
+      'Week 2 · the gap is still small enough to ignore — and easy to miss.',
+      'Week 3 · material commitments start landing before the next draw.',
+      'Week 4 · the projection crosses the point where a person should look.',
+      'Week 6 · $48k short. Seen four weeks out, while there is still time to act.',
+    ];
+    let cashAt = -1;
+    const selectCash = i => {
+      cashAt = i;
+      weeks.forEach((w, j) => w.classList.toggle('is-on', j === i));
+      tabs.forEach((b, j) => b.classList.toggle('is-on', j === i));
+      tweenNum($('[data-cash-gap]', cashScreen), gaps[i], v => '$' + Math.round(v) + 'k gap');
+      $('[data-cash-note]', cashScreen).textContent = notes[i];
+      setPill(cashScreen, i === 3 ? 'Action needed' : 'Four weeks out');
+    };
+    DEMOS.cash = () => {
+      if (cashAt < 0) bars.forEach(b => {
+        b.style.setProperty('--h', '0%');
+        requestAnimationFrame(() => { b.style.setProperty('--h', b.dataset.h + '%'); });
+      });
+      selectCash((cashAt + 1) % 4);
+    };
+    DEMOS.cash_reset = () => {
+      cashAt = -1;
+      bars.forEach(b => b.style.setProperty('--h', '0%'));
+      weeks.forEach((w, j) => w.classList.toggle('is-on', j === 0));
+      tabs.forEach((b, j) => b.classList.toggle('is-on', j === 0));
+      const gap = $('[data-cash-gap]', cashScreen);
+      gap.dataset.num = '0'; gap.textContent = '$0 gap';
+      $('[data-cash-note]', cashScreen).textContent = 'Select a week to see the projected gap.';
+      setPill(cashScreen, 'Four weeks out');
+    };
+    tabs.forEach(btn => btn.addEventListener('click', () => {
+      const i = +btn.dataset.cashTab;
+      if (cashAt < 0) bars.forEach(b => b.style.setProperty('--h', b.dataset.h + '%'));
+      selectCash(i);
+    }));
+  }
+
+  // 05 — dispatch
+  const dispatchScreen = $('[data-screen="dispatch"]');
+  if (dispatchScreen) {
+    const rows = $$('.drow', dispatchScreen);
+    const assigns = ['Booked · gate 3', '2 certified · booked', 'Slot 06:45 confirmed'];
+    const initial = ['Book equipment', 'Check crew', 'Confirm slot'];
+    let dispatchTimers = [], ready = 0;
+    const clearDispatch = () => {
+      dispatchTimers.forEach(clearTimeout); dispatchTimers = [];
+      ready = 0;
+      rows.forEach((r, i) => { r.classList.remove('is-set'); $('[data-dispatch-assign]', r).textContent = initial[i]; });
+      $('[data-dispatch-progress]', dispatchScreen).style.width = '0';
+      $('[data-dispatch-count]', dispatchScreen).textContent = '0 / 3 ready';
+      $('[data-dispatch-line]', dispatchScreen).textContent = 'Three things to stage before the gate.';
+      setPill(dispatchScreen, '2 unassigned');
+    };
+    DEMOS.dispatch = () => {
+      if (ready === rows.length) clearDispatch();
+      $('[data-dispatch-line]', dispatchScreen).textContent = 'Staging the morning against the job record…';
+      setPill(dispatchScreen, 'Staging');
+      rows.forEach((r, i) => dispatchTimers.push(setTimeout(() => {
+        r.classList.add('is-set');
+        $('[data-dispatch-assign]', r).textContent = assigns[i];
+        ready++;
+        $('[data-dispatch-count]', dispatchScreen).textContent = ready + ' / 3 ready';
+        if (ready === rows.length) {
+          $('[data-dispatch-progress]', dispatchScreen).style.width = '100%';
+          $('[data-dispatch-line]', dispatchScreen).textContent = 'Everything staged. Gate time is real.';
+          setPill(dispatchScreen, 'All staged');
+          toast('Morning staged against DJS-014');
+        }
+      }, reduce ? 0 : 260 + i * 540)));
+    };
+    DEMOS.dispatch_reset = clearDispatch;
+  }
+
+  // Wire up replay controls and play once each screen scrolls into view.
+  if (Object.keys(DEMOS).length) {
+    $$('[data-demo]').forEach(btn => btn.addEventListener('click', () => {
+      const run = DEMOS[btn.dataset.demo];
+      if (run) run();
+    }));
+    $$('[data-reset]').forEach(btn => btn.addEventListener('click', () => {
+      const reset = DEMOS[btn.dataset.reset + '_reset'];
+      if (reset) reset();
+    }));
+    if ('IntersectionObserver' in window) {
+      const auto = new IntersectionObserver(entries => {
+        entries.forEach(en => {
+          if (!en.isIntersecting || en.target.dataset.played) return;
+          en.target.dataset.played = '1';
+          const run = DEMOS[en.target.dataset.demoSec];
+          if (run) setTimeout(run, reduce ? 0 : 240);
+          auto.unobserve(en.target);
+        });
+      }, { threshold: .25 });
+      $$('[data-demo-sec]').forEach(el => auto.observe(el));
+    } else {
+      $$('[data-demo-sec]').forEach(el => { const run = DEMOS[el.dataset.demoSec]; if (run) run(); });
+    }
+  }
 
   document.body.classList.add('is-ready');
   onScroll();

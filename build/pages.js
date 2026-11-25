@@ -17,8 +17,9 @@ const MODES = [
 ];
 
 const PAGES = {
-  'index.html': 'Home', 'modes.html': 'Nine modes', 'how-it-works.html': 'How it works',
-  'approvals.html': 'Approvals', 'estimator.html': 'Estimator', 'coverage.html': 'Coverage',
+  'index.html': 'Home', 'modes.html': 'Nine modes', 'demos.html': 'Product previews',
+  'how-it-works.html': 'How it works', 'approvals.html': 'Approvals',
+  'estimator.html': 'Estimator', 'coverage.html': 'Coverage',
   'pricing.html': 'Pricing', 'join.html': 'Join',
 };
 
@@ -84,6 +85,7 @@ function shell(file, title, desc, content) {
         <div class="mega" data-mega hidden>
           <div class="mega__grid">${megaCols}
             <div class="mega__col"><p class="mega__head">Go deeper</p>
+              <a class="mega__link" href="demos.html"><span class="mega__ic"></span><span><strong>Product previews</strong><small>Five screens, in motion.</small></span></a>
               <a class="mega__link" href="how-it-works.html"><span class="mega__ic"></span><span><strong>How a job moves</strong><small>Four stages, one job.</small></span></a>
               <a class="mega__link" href="approvals.html"><span class="mega__ic"></span><span><strong>Approvals</strong><small>Automation with a human gate.</small></span></a>
               <a class="mega__link" href="estimator.html"><span class="mega__ic"></span><span><strong>Bid estimator</strong><small>Model your week.</small></span></a>
@@ -94,6 +96,7 @@ function shell(file, title, desc, content) {
           </div>
         </div>
       </div>
+      ${navLink('demos.html', 'Previews', current)}
       ${navLink('how-it-works.html', 'How it works', current)}
       ${navLink('estimator.html', 'Estimator', current)}
       ${navLink('coverage.html', 'Coverage', current)}
@@ -131,7 +134,7 @@ ${content}
   <nav class="foot__cols" aria-label="Footer">
     <div><h4>Platform</h4><a href="modes.html#projects">Projects</a><a href="modes.html#exchange">Exchange</a><a href="modes.html#platform">Platform</a><a href="modes.html#solutions">Solutions</a><a href="modes.html#supply">Supply</a></div>
     <div><h4>Build</h4><a href="modes.html#capital">Capital</a><a href="modes.html#workforce">Workforce</a><a href="modes.html#fleet">Fleet</a><a href="modes.html#studio">Studio</a><a href="approvals.html">Approvals</a></div>
-    <div><h4>Company</h4><a href="coverage.html">Coverage</a><a href="pricing.html">Pricing</a><a href="join.html">Contact</a><a href="pricing.html#faq">Questions</a><a href="index.html">Home</a></div>
+    <div><h4>Company</h4><a href="demos.html">Previews</a><a href="coverage.html">Coverage</a><a href="pricing.html">Pricing</a><a href="join.html">Contact</a><a href="pricing.html#faq">Questions</a></div>
     <div class="foot__news"><h4>Field notes</h4>
       <p class="tiny muted">What's bidding in SoCal, once a month.</p>
       <form class="news" data-news novalidate><input type="email" placeholder="you@company.com" aria-label="Email for field notes" required><button class="btn btn--accent" type="submit">Subscribe</button></form>
@@ -202,6 +205,15 @@ const home = `
       ${i === 3 ? '<div class="bars" aria-hidden="true"><i style="--h:42%"></i><i style="--h:68%"></i><i style="--h:55%"></i><i style="--h:84%"></i><i style="--h:71%"></i><i style="--h:95%"></i></div>' : ''}
       <a class="link" href="modes.html#${m[0].toLowerCase()}">Explore ${m[0]}</a>
     </article>`).join('')}
+  </div>
+</div></section>
+
+<section class="sec sec--alt"><div class="wrap" data-obs>
+  <div class="sec__head"><div><span class="eyebrow">See it move</span><h2 class="h2">Product previews, not brochure shots</h2><p class="lede">Watch the desk score a bid, gather quotes, move a pursuit, surface a cash gap and dispatch a morning. Each one is interactive.</p></div><a class="btn btn--line" href="demos.html">Open all previews <span class="arrow">→</span></a></div>
+  <div class="prev-band">
+    <a class="prev" href="demos.html#fit"><div class="prev__top"><b>Fit scoring</b><span class="tag tag--fit">Projects</span></div><div class="prev__art"><div class="prev__line"><span>Trade licence</span><span class="mono">92%</span></div><div class="prev__meter"><i style="--w:95%"></i></div><div class="prev__meter"><i style="--w:78%"></i></div><div class="prev__meter"><i style="--w:61%"></i></div></div><span class="prev__foot">Opportunity ranked before you open it →</span></a>
+    <a class="prev" href="demos.html#send"><div class="prev__top"><b>Supplier replies</b><span class="tag tag--cyan">Exchange</span></div><div class="prev__art"><div class="prev__dots"><i></i><i></i><i></i></div><div class="prev__line"><span>Quotes in</span><span class="mono">0 → 3</span></div><div class="prev__meter"><i style="--w:84%"></i></div></div><span class="prev__foot">One request, three readable replies →</span></a>
+    <a class="prev" href="demos.html#cash"><div class="prev__top"><b>Cash gap</b><span class="tag">Capital</span></div><div class="prev__art"><div class="prev__bars"><i style="--h:38%"></i><i style="--h:54%"></i><i style="--h:70%"></i><i style="--h:88%"></i><i style="--h:100%"></i></div><div class="prev__line"><span>Gap, four weeks out</span><span class="mono">$48k</span></div></div><span class="prev__foot">See it before payroll lands →</span></a>
   </div>
 </div></section>
 
@@ -523,12 +535,132 @@ const join = `
   </div>
 </div></section>`;
 
+/* ---------------- PRODUCT PREVIEWS ---------------- */
+
+function demoSection(id, n, mode, title, copy, screen, actionLabel, modeHref) {
+  return `<section class="sec demo-sec" id="${id}" data-demo-sec="${id}" data-obs>
+  <div class="wrap two demo-two">
+    <div class="demo-copy">
+      <span class="eyebrow">Preview ${String(n).padStart(2, '0')} / ${mode}</span>
+      <h2 class="h2">${title}</h2>
+      <p class="lede">${copy}</p>
+      <div class="demo-actions">
+        <button class="btn btn--accent" data-demo="${id}">${actionLabel}</button>
+        <button class="btn btn--ghost" data-reset="${id}">Restart</button>
+        <a class="btn btn--line" href="${modeHref}">Read the mode</a>
+      </div>
+      <p class="demo-note">Illustrative interface preview. The numbers are here to show the motion, not to quote a job.</p>
+    </div>
+    ${screen}
+  </div>
+</section>`;
+}
+
+const bar = (label, pill = 'In motion') => `<div class="dscreen__bar"><span class="dscreen__dots"><i></i><i></i><i></i></span><span class="mono">${label}</span><span class="pill pill--live" data-screen-pill><i></i>${pill}</span></div>`;
+
+const fitScreen = `<div class="dscreen" data-screen="fit" aria-label="Projects fit scoring preview">
+  ${bar('DJS / Projects · opportunities', 'Live scoring')}
+  <div class="dscreen__body">
+    <div class="fit-head" data-fit-body>
+      <div><span class="mono tiny" data-fit-id>DJS-014</span><h3 data-fit-title>Commercial TI · Pasadena</h3><p class="tiny muted" data-fit-meta>Electrical · 12 min from your yard</p></div>
+      <div class="fit-score" data-fit-score style="--score:0"><b data-fit-num>0</b><span>fit</span></div>
+    </div>
+    <div class="fit-meters">
+      <div class="fit-meter"><span>Trade and licence fit</span><i><b data-fit-bar="0"></b></i></div>
+      <div class="fit-meter"><span>Crew available</span><i><b data-fit-bar="1"></b></i></div>
+      <div class="fit-meter"><span>Drive from your yard</span><i><b data-fit-bar="2"></b></i></div>
+    </div>
+    <div class="fit-trail"><span data-fit-line>Ready for your estimator</span><span class="mono" data-fit-step>01 / 03</span></div>
+  </div>
+</div>`;
+
+const sendScreen = `<div class="dscreen" data-screen="send" aria-label="Exchange supplier request preview">
+  ${bar('DJS / Exchange · request 0142', 'Draft ready')}
+  <div class="dscreen__body">
+    <div class="req"><span>Supply request</span><b>3/4&quot; conduit · 1,200 ft</b><p class="tiny muted">Delivery Thu 07:00 · Pasadena · scope attached</p></div>
+    <div class="send-rows" data-send-rows>
+      <div class="send-row"><span class="send-row__ic">AW</span><span><b>Harbor Wholesale</b><small>In stock · quote on file</small></span><span class="send-row__state">Waiting</span><span class="send-row__price" data-send-price="$176,840">—</span></div>
+      <div class="send-row"><span class="send-row__ic">AE</span><span><b>Alpine Electric Supply</b><small>Stock confirmed this morning</small></span><span class="send-row__state">Waiting</span><span class="send-row__price" data-send-price="$184,200">—</span></div>
+      <div class="send-row"><span class="send-row__ic">IC</span><span><b>Inland Conduit Co.</b><small>Lead time 11 days</small></span><span class="send-row__state">Waiting</span><span class="send-row__price" data-send-price="$191,500">—</span></div>
+    </div>
+    <div class="send-foot"><span data-send-line>Request drafted. Nothing sent until you approve.</span><span class="mono" data-send-count>0 / 3 quotes</span></div>
+  </div>
+</div>`;
+
+const routeScreen = `<div class="dscreen" data-screen="route" aria-label="Platform pursuit board preview">
+  ${bar('DJS / Platform · DJS-014', 'Human gate')}
+  <div class="dscreen__body">
+    <div class="kanban" data-kanban>
+      <div class="kcol is-on"><span>Lead</span><div class="kcol__slot"><div class="kcard is-moving" data-route-card><em>DJS-014</em><b>Pasadena TI</b><small>Matched to your trade · 92% fit</small></div></div></div>
+      <div class="kcol"><span>Priced</span><div class="kcol__slot"></div></div>
+      <div class="kcol"><span>Pursuit</span><div class="kcol__slot"></div></div>
+      <div class="kcol"><span>Build</span><div class="kcol__slot"></div></div>
+    </div>
+    <div class="route-log" data-route-log><span><span class="mono">09:41</span> Subagent prepared the brief. Awaiting your OK.</span></div>
+  </div>
+</div>`;
+
+const cashScreen = `<div class="dscreen" data-screen="cash" aria-label="Capital cash gap preview">
+  ${bar('DJS / Capital · draw vs payroll', 'Four weeks out')}
+  <div class="dscreen__body">
+    <div class="cash-top"><div><span class="mono tiny">DJS-014 · Pasadena TI</span><h3>Cash position, by week</h3></div><span class="cash-gap" data-cash-gap>$0 gap</span></div>
+    <div class="cash-chart" data-cash-chart>
+      <div class="cash-week is-on" data-cash-week="0"><span>W2</span><i class="cash-draw" style="--h:0%" data-h="72"></i><i class="cash-pay" style="--h:0%" data-h="38"></i></div>
+      <div class="cash-week" data-cash-week="1"><span>W3</span><i class="cash-draw" style="--h:0%" data-h="80"></i><i class="cash-pay" style="--h:0%" data-h="52"></i></div>
+      <div class="cash-week" data-cash-week="2"><span>W4</span><i class="cash-draw" style="--h:0%" data-h="86"></i><i class="cash-pay" style="--h:0%" data-h="67"></i></div>
+      <div class="cash-week" data-cash-week="3"><span>W6</span><i class="cash-draw" style="--h:0%" data-h="92"></i><i class="cash-pay" style="--h:0%" data-h="100"></i></div>
+    </div>
+    <div class="cash-legend"><span><i></i>Draw</span><span><i></i>Payroll</span></div>
+    <div class="cash-tabs"><button data-cash-tab="0" class="is-on">Week 2</button><button data-cash-tab="1">Week 3</button><button data-cash-tab="2">Week 4</button><button data-cash-tab="3">Week 6</button></div>
+    <p class="cash-note" data-cash-note>Select a week to see the projected gap.</p>
+  </div>
+</div>`;
+
+const dispatchScreen = `<div class="dscreen" data-screen="dispatch" aria-label="Fleet and Workforce dispatch preview">
+  ${bar('DJS / Fleet + Workforce · Monday', '2 unassigned')}
+  <div class="dscreen__body">
+    <div class="dispatch-head"><span>Pasadena TI · 07:00 gate</span><span class="pill pill--warn" data-dispatch-state>2 unassigned</span></div>
+    <div class="dispatch-rows" data-dispatch-rows>
+      <div class="drow"><span class="drow__time">07:00</span><span class="drow__what"><b>Boom lift</b><small>Fleet · gate 3</small></span><span class="drow__assign" data-dispatch-assign>Book equipment</span></div>
+      <div class="drow"><span class="drow__time">07:00</span><span class="drow__what"><b>2 electricians</b><small>Workforce · certified</small></span><span class="drow__assign" data-dispatch-assign>Check crew</span></div>
+      <div class="drow"><span class="drow__time">06:45</span><span class="drow__what"><b>Conduit delivery</b><small>Exchange · 11-day lead</small></span><span class="drow__assign" data-dispatch-assign>Confirm slot</span></div>
+    </div>
+    <div class="dispatch-track"><i data-dispatch-progress></i></div>
+    <div class="dispatch-caption"><span data-dispatch-line>Three things to stage before the gate.</span><span class="mono" data-dispatch-count>0 / 3 ready</span></div>
+  </div>
+</div>`;
+
+const demos = `
+<section class="phero"><div class="wrap phero__in">
+  <div><div class="crumbs"><a href="index.html">Home</a> / <span>Product previews</span></div><span class="eyebrow">The desk / in motion</span>
+    <h1 class="phero__h1">Watch the desk <em>work.</em></h1><p class="lede">Five small screens, each doing a real job. Press play, change a week, send a request — the animations show what the product actually does.</p></div>
+  <div class="phero__meta"><span class="pill pill--live"><i></i>5 interactive previews</span><span class="coord">Illustrative · not a live account</span><a class="btn btn--accent" data-magnetic href="join.html">Open a free desk <span class="arrow">→</span></a></div>
+</div></section>
+
+<section class="sec"><div class="wrap">
+  <div class="sec__head" data-obs><div><h2 class="h2">Pick a screen</h2><p class="lede">They start themselves when you scroll to them. Every one can be replayed.</p></div></div>
+  <div class="chips" data-obs>
+    <a class="chip" href="#fit">01 · Fit scoring</a><a class="chip" href="#send">02 · Supplier replies</a>
+    <a class="chip" href="#route">03 · Pursuit board</a><a class="chip" href="#cash">04 · Cash gap</a>
+    <a class="chip" href="#dispatch">05 · Dispatch</a>
+  </div>
+</div></section>
+
+${demoSection('fit', 1, 'Projects', 'A bid arrives already ranked', 'Opportunities are scored against your licence, your crew and the drive from your yard. Cycle through three to see the fit change — and why the third one is worth a second look.', fitScreen, 'Next opportunity', 'modes.html#projects')}
+${demoSection('send', 2, 'Exchange', 'One request, three readable replies', 'A subagent drafts the supplier request from the scope. You approve it, then the quotes come back into the same thread. No phone tag, no re-keying.', sendScreen, 'Send the request', 'modes.html#exchange')}
+${demoSection('route', 3, 'Platform', 'The pursuit moves, the notes stay', 'Scope, quotes and the next action travel with the job. Advance the card and watch the record keep its history at every stage.', routeScreen, 'Advance the job', 'modes.html#platform')}
+${demoSection('cash', 4, 'Capital', 'See the gap before payroll lands', 'Draw and payroll sit on the same chart by week. Pick a week to watch the projection move from a quiet number to one you can act on.', cashScreen, 'Step through the weeks', 'modes.html#capital')}
+${demoSection('dispatch', 5, 'Fleet + Workforce', 'Stage the morning in one pass', 'Crew certifications, equipment and material delivery all read from the job. Book the morning and watch the gate time fill in.', dispatchScreen, 'Dispatch the morning', 'modes.html#fleet')}
+
+${ctaStrip()}`;
+
 /* ---------------- 404 ---------------- */
 const notfound = `<section class="wrap notfound"><div class="notfound__code">404</div><span class="eyebrow">Off the survey grid</span><h1 class="h1">That parcel isn't on the map.</h1><p class="lede center" style="margin-inline:auto">The page moved or never existed. The desk is still where you left it.</p><div style="display:flex;gap:12px;justify-content:center;margin-top:24px"><a class="btn btn--accent" href="index.html">Back to the desk</a><a class="btn btn--line" href="modes.html">Browse nine modes</a></div></section>`;
 
 const files = {
   'index.html': ['The construction desk for Southern California', 'Find the work, price it, build it. One account for the full job lifecycle — projects, bids, supply, capital, crews, fleet and finished-work proof.', home],
   'modes.html': ['Nine modes, one desk', 'Projects, Exchange, Platform, Solutions, Supply, Capital, Workforce, Fleet and Studio — one connected record for every job.', modes],
+  'demos.html': ['Product previews', 'Five interactive product previews: fit scoring, supplier replies, pursuit board, cash gap and dispatch — all in motion.', demos],
   'how-it-works.html': ['How a job moves', 'Follow one Pasadena tenant improvement from the first lead to the next customer through the D&J Stratagem desk.', how],
   'approvals.html': ['Automation that waits for your yes', 'Subagents prepare real work across the pipeline. A person approves every run before anything is sent.', approvals],
   'estimator.html': ['Bid estimator', 'Model your week: bids, job value, estimating hours and the hours a connected desk gives back.', estimator],
