@@ -377,7 +377,7 @@ const modes = `
     <div class="chips" role="tablist" aria-label="Filter modes"><button class="chip is-on" data-filter="all">All nine</button><button class="chip" data-filter="find">Find</button><button class="chip" data-filter="win">Win</button><button class="chip" data-filter="build">Build</button><button class="chip" data-filter="keep">Keep</button></div>
   </div>
   <div class="bento stagger" data-bento>
-    ${MODES.map((m, i) => `<article class="card mode-card${i === 0 ? ' card--xl' : i === 4 || i === 8 ? ' card--wide' : ''}" id="${m[0].toLowerCase()}" data-group="${m[1]}" data-glow data-obs data-mode="${i}" style="--i:${i % 4}">
+    ${MODES.map((m, i) => `<article class="card mode-card" id="${m[0].toLowerCase()}" data-group="${m[1]}" data-glow data-obs data-mode="${i}" style="--i:${i % 3}">
       <span class="card__stage">${m[1].toUpperCase()}</span><span class="mode-card__num mono">${String(i + 1).padStart(2, '0')}</span>
       <h3>${m[0]}</h3><p>${m[2]}</p>
       <ul class="mode-card__bullets">${m[3].map(b => `<li>${b}</li>`).join('')}</ul>

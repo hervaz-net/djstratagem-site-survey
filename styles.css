@@ -3132,6 +3132,21 @@ table.cmp tbody tr:hover {
   color: var(--ds-accent);
 }
 
+body[data-page=modes] .bento {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-auto-rows: 1fr;
+}
+
+@media (max-width: 1080px) {
+  body[data-page=modes] .bento {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 620px) {
+  body[data-page=modes] .bento {
+    grid-template-columns: 1fr;
+  }
+}
 .mode-card {
   cursor: pointer;
 }
